@@ -1,0 +1,18 @@
+/* You can add global styles to this file, and also import other style files */
+body{
+    background: url(assets/patterns/hand_lines.png);
+    background-position: -30px -30px;
+    margin:0px;
+    padding:0px;
+}
+
+body::before{
+    background-color: rgba(255,255, 255, 0.97);
+    content: '';
+    display: block;
+    height: 500%;
+    position: absolute;
+    width: 500%;
+  }
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
