@@ -1,7 +1,138 @@
 canvas {
-    width:100%;
-    height:100%;
-    border: 1px solid #ccc;
-    position: absolute;
-    cursor: url(/assets/patterns/hand_cursor.png) 40 32, auto; 	
+  width: 4096;
+  height: 2160;
+  border: 1px solid #ccc;
+  position: absolute;
+  cursor: url(/assets/patterns/hand_cursor.png) 40 32, auto;
+  border: 0px;
+}
+
+button.toggle_button {
+  position: fixed;
+}
+
+.title {
+  width: 100%;
+  height: 100%;
+  background: url(/assets/title.png);
+  background-repeat: no-repeat;
+  background-size: 50%;
+  position: absolute;
+  background-position: center;
+}
+
+mat-drawer .copyleft:before {
+  content: "";
+  display: block;
+  background: url(/assets/gpl-v3-logo.svg);
+  width: 100px;
+  height: 51px;
+  background-repeat: no-repeat;
+  margin-left: 0px;
+  margin-right: 10px;
+  opacity: 0.6;
+  margin-top: 2px;
+  background-size: 100px;
+  margin: auto;
+}
+
+mat-drawer .copyleft {
+  display: block;
+  position: absolute;
+  bottom: 10px;
+  font-size: 10px;
+  width: 100%;
+  text-align: left;
+  color: #9e9e9e;
+}
+
+.logo {
+  background: url(/assets/title.png);
+  width: 200px;
+  height: 60px;
+  background-size: 200px;
+  background-repeat: no-repeat;
+  padding: 30px;
+  background-position: center;
+}
+
+.mat-drawer-container {
+  width: 100%;
+  height: 100%;
+  margin: 0px;
+  border: 0px;
+  padding: 0px;
+  background: none;
+}
+
+.toggle_button mat-icon {
+  font-size: 40px;
+  width: 45px;
+  border-radius: 55px;
+  padding: 10px;
+  margin: 10px;
+}
+
+.toggle_button:hover mat-icon {
+  background: #7b1fa2;
+  color: white;
+}
+
+mat-drawer-content {
+  padding: 0px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+nav {
+  float: left;
+  width: 100%;
+}
+
+nav ul {
+  width: 100%;
+  height: 100%;
+  display: block;
+  margin: 0px;
+  padding: 0px;
+}
+
+nav ul li {
+  width: calc(100% - 20px);
+  display: block;
+  cursor: pointer;
+  user-select: none;
+  padding: 10px;
+  margin-bottom: 10px;
+  outline: none;
+  max-width: 240px;
+}
+
+nav ul li button {
+  width: 100%;
+}
+
+.key {
+  width: 50px;
+  height: 50px;
+  background-size: 50px;
+  float: left;
+  background-repeat: no-repeat;
+}
+.key.ctrl {
+  background-image: url(/assets/key_ctrl.svg);
+}
+.key.alt {
+  background-image: url(/assets/key_alt.svg);
+}
+.key.shift {
+  background-image: url(/assets/key_shift.svg);
+}
+.key_text {
+  margin-left: 10px;
+  width: 180px;
+  display: block;
+  float: left;
+  height: 60px;
 }

@@ -1,7 +1,61 @@
-<canvas #myCanvas1 ></canvas>
+<mat-drawer-container [hasBackdrop]="true">
+  <mat-drawer #drawer [mode]="'Over'">
 
-<canvas #myCanvas2 ></canvas>
+    <!-- Drawer Menu-->
+    <div class="logo"></div>
+    <nav>
+      <ul>
+        <li class="animated fadeInUp delay1">
+          <a id="download" #download download="myDugeonDraw.png">
+            <button mat-raised-button color="accent" (click)="saveDraw()">
+              <mat-icon>save</mat-icon>
+              <span>Download Draw</span>
+            </button>
+          </a>
+          <div #downloads class="downloads"></div>
+        </li>
+        <li class="animated fadeInUp delay1">
+          <button mat-raised-button color="accent" (click)="clearScreen()">
+            <mat-icon>delete</mat-icon>
+            <span>Clear Screen</span>
+          </button>
+        </li>
+        <li>
+          <div class="key ctrl"></div>
+          <span class="key_text">Press <strong>Ctrl</strong> Key while drawing to draw Horizontal Lines.</span>
+        </li>
+        <li>
+          <div class="key alt"></div>
+          <span class="key_text">Press <strong>Alt</strong> Key while drawing to draw Vertical Lines.</span>
+        </li>
+        <li>
+          <div class="key shift"></div>
+          <span class="key_text">Press <strong>Shift</strong> Key to Erase.</span>
+        </li>
 
-<canvas #myCanvas3 (document:mousemove)="onMouseMove($event)" (document:mouseup)="onMouseUp()"
-  (document:mousedown)="onMouseDown($event)"></canvas>
+      </ul>
+    </nav>
 
+    <div class="divider"></div>
+    <span class="copyleft"></span>
+
+  </mat-drawer>
+  <mat-drawer-content>
+    <!-- Drawer Content - Canvas -->
+
+    <canvas #myCanvas1></canvas>
+    <canvas #myCanvas2></canvas>
+    <canvas #myCanvas3 (mousemove)="onMouseMove($event)" (mouseup)="onMouseUp()"
+      (mousedown)="onMouseDown($event)"></canvas>
+
+    <!-- Animated Title-->
+    <div class="title animate__animated"></div>
+
+    <!-- Toggle Menu button-->
+    <button mat-icon-button class="toggle_button animate__animated animate__wobble" color="primary"
+      (mousedown)="toggleMenu($event)">
+      <mat-icon>menu</mat-icon>
+    </button>
+
+  </mat-drawer-content>
+</mat-drawer-container>

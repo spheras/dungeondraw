@@ -1,4 +1,6 @@
 import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { animateCSS } from 'src/util/util';
+import { MatDrawer } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-root',
@@ -8,31 +10,137 @@ import { Component, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 export class AppComponent implements AfterViewInit {
   title = 'dungeondraw';
 
-  // its important myCanvas matches the variable name in the template
+  //Canvas to draw the floor of the lines
   @ViewChild('myCanvas3', { static: false }) myCanvas3: ElementRef;
+  //Canvas to draw the border of the floor
   @ViewChild('myCanvas2', { static: false }) myCanvas2: ElementRef;
+  //Canvas to draw the external decorations
   @ViewChild('myCanvas1', { static: false }) myCanvas1: ElementRef;
+  //the drawer
+  @ViewChild('drawer') myDrawer: MatDrawer;
+  //the download section
+  @ViewChild('download') downloadLink: ElementRef;
+
+  //context for each canvas
   public ctx1: CanvasRenderingContext2D;
   public ctx2: CanvasRenderingContext2D;
   public ctx3: CanvasRenderingContext2D;
 
-  @ViewChild('pattern') pattern: ElementRef;
-
+  // flag to know if it is drawing or not
   private isDrawing = false;
+  // last point drawn
   private lastPoint;
+  // original point that was pressed
   private originalPoint;
 
   constructor() {
   }
 
+  /**
+   * @name toogleMenu
+   * @description toogle the menu
+   * @param e 
+   */
+  toggleMenu(e) {
+    this.myDrawer.toggle();
+    e.stopPropagation();
+    e.preventDefault();
+  }
+
+  /**
+   * @name clearScreen
+   * @description clear the current screen
+   */
+  clearScreen() {
+    this.ctx1.clearRect(0, 0, this.myCanvas1.nativeElement.width, this.myCanvas1.nativeElement.height);
+    this.ctx2.clearRect(0, 0, this.myCanvas1.nativeElement.width, this.myCanvas1.nativeElement.height);
+    this.ctx3.clearRect(0, 0, this.myCanvas1.nativeElement.width, this.myCanvas1.nativeElement.height);
+  }
+
+  /**
+   * @name saveDraw
+   * @description save the current draw
+   */
+  saveDraw() {
+
+    let width = this.myCanvas1.nativeElement.width;
+    let height = this.myCanvas1.nativeElement.height;
+
+    //discovering the boundaries of the draw
+    let data = this.ctx1.getImageData(0, 0, width, height).data;
+    let hf = height * 4;
+    let wf = width * 4;
+    let lowestX = width;
+    let lowestY = height;
+    let maxX = 0;
+    let maxY = 0;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        let index = y * (wf) + x * 4;
+        let r = data[index];
+        let g = data[index + 1];
+        let b = data[index + 2];
+        let a = data[index + 3];
+        if (a != 0) {
+          if (x < lowestX) {
+            lowestX = x;
+          }
+          if (y < lowestY) {
+            lowestY = y;
+          }
+          if (x > maxX) {
+            maxX = x;
+          }
+          if (y > maxY) {
+            maxY = y;
+          }
+        }
+      }
+    }
+
+    //Make a Canvas to copy the data you would like to download to
+    var hidden_canv = document.createElement('canvas');
+    hidden_canv.style.display = 'none';
+    document.body.appendChild(hidden_canv);
+    let saveWidth = maxX - lowestX;
+    let saveHeight = maxY - lowestY;
+    hidden_canv.width = saveWidth;
+    hidden_canv.height = saveHeight;
+
+    let hidden_ctx = hidden_canv.getContext('2d');
+
+
+    hidden_ctx.fillStyle = "white";
+    hidden_ctx.fillRect(0, 0, width, height);
+    hidden_ctx.drawImage(this.myCanvas1.nativeElement, lowestX, lowestY, saveWidth, saveHeight, 0, 0, saveWidth, saveHeight);
+    hidden_ctx.drawImage(this.myCanvas2.nativeElement, lowestX, lowestY, saveWidth, saveHeight, 0, 0, saveWidth, saveHeight);
+    hidden_ctx.drawImage(this.myCanvas3.nativeElement, lowestX, lowestY, saveWidth, saveHeight, 0, 0, saveWidth, saveHeight);
+
+    //Create a download URL for the data
+    var hidden_data = hidden_canv.toDataURL("image/png").replace("image/png", "image/octet-stream");
+
+    this.downloadLink.nativeElement.setAttribute('download', 'dungeondraw.png');
+    this.downloadLink.nativeElement.setAttribute('href', hidden_data);
+  }
+
   ngAfterViewInit(): void {
+    //title animation when starting
+    animateCSS('.title', "lightSpeedInLeft").then((m) => {
+      animateCSS('.title', "lightSpeedOutRight").then(m => {
+        document.querySelector('.title').remove();
+      });
+    });
+
     this.loadImage("assets/patterns/hand_lines.png").then(image3 => {
       this.loadImage("assets/patterns/hand_corss.png").then(image1 => {
 
         let linecap: CanvasLineCap = "round";
         let linejoin: CanvasLineJoin = "round";
-        this.myCanvas3.nativeElement.width = window.innerWidth;
-        this.myCanvas3.nativeElement.height = window.innerHeight;
+
+        let fourkwidth = 4096;
+        let fourkheight = 2160;
+        this.myCanvas3.nativeElement.width = fourkwidth;
+        this.myCanvas3.nativeElement.height = fourkheight;
         this.ctx3 = this.myCanvas3.nativeElement.getContext('2d');
         let pat3 = this.ctx3.createPattern(image3, "repeat");
         this.ctx3.fillStyle = pat3;
@@ -41,15 +149,15 @@ export class AppComponent implements AfterViewInit {
         this.ctx3.lineCap = linecap;
         this.ctx3.strokeStyle = pat3;
 
-        this.myCanvas2.nativeElement.width = window.innerWidth;
-        this.myCanvas2.nativeElement.height = window.innerHeight;
+        this.myCanvas2.nativeElement.width = fourkwidth;
+        this.myCanvas2.nativeElement.height = fourkheight;
         this.ctx2 = this.myCanvas2.nativeElement.getContext('2d');
         this.ctx2.lineWidth = 40;
         this.ctx2.lineJoin = linejoin;
         this.ctx2.lineCap = linecap;
 
-        this.myCanvas1.nativeElement.width = window.innerWidth;
-        this.myCanvas1.nativeElement.height = window.innerHeight;
+        this.myCanvas1.nativeElement.width = fourkwidth;
+        this.myCanvas1.nativeElement.height = fourkheight;
         this.ctx1 = this.myCanvas1.nativeElement.getContext('2d');
         let pat1 = this.ctx3.createPattern(image1, "repeat");
         this.ctx1.lineWidth = 100;
@@ -64,9 +172,13 @@ export class AppComponent implements AfterViewInit {
 
 
   onMouseDown(e) {
+    if (this.myDrawer.opened) {
+      return;
+    }
+
     this.isDrawing = true;
-    let canvasX = e.pageX - this.myCanvas3.nativeElement.offsetLeft;
-    let canvasY = e.pageY - this.myCanvas3.nativeElement.offsetTop;
+    let canvasX = e.pageX - this.myCanvas3.nativeElement.offsetLeft + this.myCanvas3.nativeElement.parentElement.scrollLeft;
+    let canvasY = e.pageY - this.myCanvas3.nativeElement.offsetTop + this.myCanvas3.nativeElement.parentElement.scrollTop;
 
     this.lastPoint = { x: canvasX, y: canvasY };
     this.originalPoint = { x: canvasX, y: canvasY };
@@ -100,8 +212,8 @@ export class AppComponent implements AfterViewInit {
   onMouseMove(e) {
     if (!this.isDrawing) return;
 
-    let canvasX = e.pageX - this.myCanvas3.nativeElement.offsetLeft;
-    let canvasY = e.pageY - this.myCanvas3.nativeElement.offsetTop;
+    let canvasX = e.pageX - this.myCanvas3.nativeElement.offsetLeft + this.myCanvas3.nativeElement.parentElement.scrollLeft;
+    let canvasY = e.pageY - this.myCanvas3.nativeElement.offsetTop + this.myCanvas3.nativeElement.parentElement.scrollTop;
     var currentPoint = { x: canvasX, y: canvasY };
     var dist = this.distanceBetween(this.lastPoint, currentPoint);
     var angle = this.angleBetween(this.lastPoint, currentPoint);
@@ -132,7 +244,7 @@ export class AppComponent implements AfterViewInit {
       let ct2Size = 23;
       let ct1Size = 45;
       //this.ctx3.fillRect(x - ct3Size, y - ct3Size, ct3Size * 2, ct3Size * 2);
-      let offset = -30;
+      let offset = 0;
       this.ctx3.translate(offset, offset);
       this.roundRect(this.ctx3, x - ct3Size - offset, y - ct3Size - offset, ct3Size * 2, ct3Size * 2, 10, true, true);
       this.ctx3.translate(-offset, -offset);
