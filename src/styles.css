@@ -1,20 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
-@import '~animate.css/animate.min';
+@import "~animate.css/animate.min";
 
-body{
-    background: url(assets/patterns/hand_lines.png);
-    /*background-position: -30px -30px;*/
-    margin:0px;
-    padding:0px;
+body {
+  margin: 0px;
+  padding: 0px;
 }
 
-body::before{
-    background-color: rgba(255,255, 255, 0.97);
-    content: '';
-    display: block;
-    height: 100%;
-    position: absolute;
-    width: 100%;
-  }
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+.mat-menu-panel {
+  background: #7b1fa2;
+}
